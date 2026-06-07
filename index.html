@@ -135,11 +135,15 @@ body {
   gap: 12px;
 }
 .topbar-hello {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text);
+  white-space: nowrap;
 }
 .topbar-hello span { color: var(--accent2); }
 .balance-badge {
@@ -805,17 +809,132 @@ footer {
 /* ── MOBILE ADJUSTMENTS ──────────────────────── */
 @media (max-width: 640px) {
   :root { --sidebar-w: 0px; }
+
+  /* Hide sidebar, show bottom nav instead */
   .sidebar { display: none; }
   footer { margin-left: 0; }
-  .hero h1 { font-size: 36px; }
+
+  /* Main takes full width */
+  .main { margin-left: 0; padding-bottom: 60px; }
+
+  /* Topbar: compact, no overflow */
+  .topbar {
+    padding: 0 10px;
+    height: 44px;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .topbar-left { gap: 6px; min-width: 0; flex: 1; overflow: hidden; }
+  .topbar-hello {
+    font-size: 9px;
+    letter-spacing: 1px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 130px;
+  }
+  .topbar-hello span { font-size: 8px; color: var(--accent2); }
+  .balance-badge { font-size: 8px; padding: 2px 6px; letter-spacing: 0.5px; }
+  .topbar-right { gap: 5px; flex-shrink: 0; }
+  .chain-tag { display: none; }
+  .btn-wallet { padding: 6px 10px; font-size: 9px; letter-spacing: 1px; }
+
+  /* Hero */
+  .hero { padding: 20px 0 18px; }
+  .hero h1 { font-size: 38px; letter-spacing: 2px; }
+  .hero-chip { font-size: 8px; padding: 3px 8px; }
+  .hero-desc { font-size: 10px; }
+
+  /* Stats: 2x2 grid */
   .stats-bar { grid-template-columns: repeat(2,1fr); }
+  .stat-cell { padding: 12px 10px; }
+  .stat-v { font-size: 18px; }
+  .stat-l { font-size: 7px; }
   .stat-cell:nth-child(2) { border-right: none; }
   .stat-cell:nth-child(3) { border-top: 1px solid var(--border); }
   .stat-cell:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
-  .feats { grid-template-columns: 1fr; }
-  .topbar { padding: 0 12px; }
-  .page { padding: 0 12px 60px; }
+
+  /* Page padding */
+  .page { padding: 0 10px 70px; }
+  .sec-header { font-size: 9px; margin: 24px 0 12px; }
+
+  /* Search */
+  .search-card { padding: 14px; }
+  .search-input { font-size: 13px; padding: 11px 8px 11px 10px; }
+  .search-tld { font-size: 12px; padding: 0 8px; }
+  .btn-search { font-size: 10px; padding: 0 14px; min-width: 64px; }
+
+  /* Result row */
+  .result-row { flex-direction: column; gap: 10px; padding: 12px; }
+  .r-right { width: 100%; justify-content: space-between; }
+  .r-name { font-size: 13px; }
+
+  /* Steps */
+  .step { padding: 12px; gap: 12px; }
+  .step-t { font-size: 11px; }
+  .step-d { font-size: 9px; }
+
+  /* Features: single column on very small, 2col ok */
+  .feats { grid-template-columns: 1fr 1fr; }
+  .feat { padding: 12px; }
+  .feat-t { font-size: 9px; letter-spacing: 1px; }
+  .feat-d { font-size: 8px; }
+
+  /* Creator */
+  .creator { padding: 14px; }
+  .creator-name { font-size: 16px; }
+  .creator-desc { font-size: 9px; }
+
+  /* Overlays: full width */
+  .sheet { padding: 0 14px 28px; }
+  .wname { font-size: 12px; }
+  .wdesc { font-size: 8px; }
+
+  /* Footer */
+  footer { flex-direction: column; gap: 4px; text-align: center; padding: 12px 14px 20px; }
+
+  /* Bottom nav bar for mobile */
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
 }
+
+/* Bottom nav bar - mobile only */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 60;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  height: 52px;
+  align-items: stretch;
+}
+.mbn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--fm);
+  font-size: 7px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  -webkit-appearance: none;
+  border-right: 1px solid var(--border);
+  transition: color 0.15s, background 0.15s;
+}
+.mbn-item:last-child { border-right: none; }
+.mbn-item.active { color: var(--accent); background: rgba(204,51,0,0.05); }
+.mbn-item svg { width: 14px; height: 14px; }
 </style>
 </head>
 <body>
@@ -858,7 +977,7 @@ footer {
   <!-- TOP BAR -->
   <header class="topbar">
     <div class="topbar-left">
-      <div class="topbar-hello">HELLO, <span id="walletHello">ANONYMOUS</span></div>
+      <div class="topbar-hello">HELLO,<span id="walletHello">ANONYMOUS</span></div>
       <div class="balance-badge" id="balanceBadge">
         <span id="balanceTxt">0.00</span>&nbsp;USDC
       </div>
@@ -971,6 +1090,30 @@ footer {
 
   </div><!-- /page -->
 </div><!-- /main -->
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobileNav">
+  <a class="mbn-item active" href="#" onclick="setMbnActive(this);window.scrollTo(0,0);return false;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Home
+  </a>
+  <a class="mbn-item" href="#search-section" onclick="setMbnActive(this);return false;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Search
+  </a>
+  <a class="mbn-item" href="#how-section" onclick="setMbnActive(this);return false;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    How-To
+  </a>
+  <a class="mbn-item" href="#feat-section" onclick="setMbnActive(this);return false;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Features
+  </a>
+  <a class="mbn-item" href="#creator-section" onclick="setMbnActive(this);return false;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Creator
+  </a>
+</nav>
 
 <footer>
   <div class="foot-logo">Arc<span>Domains</span></div>
@@ -1097,6 +1240,10 @@ let provider=null,signer=null,ctr=null,connected=false,addr='',pendingDomain='';
 
 function setActive(el) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+}
+function setMbnActive(el) {
+  document.querySelectorAll('.mbn-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
 }
 
