@@ -1282,53 +1282,60 @@ textarea.form-input { resize: vertical; min-height: 100px; line-height: 1.6; }
 
   <!-- ===== PAGE: AUTH ===== -->
   <div id="auth-page" class="page active">
-    <!-- Animated particles -->
-    <div class="auth-particles" id="auth-particles"></div>
+    <div class="auth-content" style="justify-content:center;min-height:100vh;padding:48px 24px;">
 
-    <div class="auth-content">
-      <div class="auth-logo">
-        <div class="auth-logo-icon">
-          <svg width="40" height="40" viewBox="0 0 32 32" fill="none">
-            <path d="M16 2L4 8v8c0 6.6 5.1 12.8 12 14 6.9-1.2 12-7.4 12-14V8L16 2z" fill="url(#authShieldGrad)"/>
-            <path d="M11 16l3.5 3.5L21 12" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            <defs>
-              <linearGradient id="authShieldGrad" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#3b82f6"/>
-                <stop offset="1" stop-color="#06b6d4"/>
-              </linearGradient>
-            </defs>
-          </svg>
+      <!-- Logo image -->
+      <div style="margin-bottom:20px;text-align:center;">
+        <img src="https://i.postimg.cc/GmBcp4CD/1781061851354.png"
+             width="96" height="96"
+             style="border-radius:22px;object-fit:contain;"
+             alt="FreelanceShield Logo"/>
+      </div>
+
+      <!-- Brand name -->
+      <h1 style="font-family:var(--font-head);font-size:30px;font-weight:800;
+                 color:#CCFF00;text-align:center;margin-bottom:10px;letter-spacing:-0.5px;">
+        FreelanceShield
+      </h1>
+
+      <!-- Tagline -->
+      <p style="color:#64748b;font-size:14px;text-align:center;
+                margin-bottom:40px;line-height:1.6;max-width:280px;">
+        On-chain escrow powered by Arc Network
+      </p>
+
+      <!-- Sign Up & Log In buttons -->
+      <div id="auth-buttons" style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px;">
+
+        <button onclick="openWalletModal('signup')"
+          style="width:100%;padding:17px;border-radius:12px;
+                 background:#CCFF00;border:none;cursor:pointer;
+                 font-family:var(--font-head);font-size:16px;font-weight:700;
+                 color:#000000;transition:all 0.2s;
+                 box-shadow:0 4px 28px rgba(204,255,0,0.3);">
+          Sign Up
+        </button>
+
+        <button onclick="openWalletModal('login')"
+          style="width:100%;padding:17px;border-radius:12px;
+                 background:transparent;border:2px solid #CCFF00;
+                 cursor:pointer;font-family:var(--font-head);
+                 font-size:16px;font-weight:700;color:#CCFF00;
+                 transition:all 0.2s;">
+          Log In
+        </button>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+          <div style="flex:1;height:1px;background:#1e2d42;"></div>
+          <span style="font-size:11px;color:#64748b;font-family:var(--font-mono);">Arc Testnet · Chain 5042</span>
+          <div style="flex:1;height:1px;background:#1e2d42;"></div>
         </div>
-        <span class="auth-logo-name">FreelanceShield</span>
       </div>
 
-      <h1 class="auth-headline">Work done.<br/>Payment guaranteed.</h1>
-      <p class="auth-sub">On-chain escrow powered by Arc Network. Connect your wallet to get started — no sign-up needed.</p>
-
-      <div class="auth-network-badge">
-        <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#10b981"/></svg>
-        Arc Testnet · Chain 5042
-      </div>
-
-      <div class="auth-buttons" id="auth-buttons">
-        <button class="auth-btn" onclick="connectMetaMask()">
-          <span class="auth-btn-icon">
-            <img src="https://i.postimg.cc/MGD1K3xn/download.png" width="26" height="26" style="object-fit:contain;border-radius:4px"/>
-          </span>
-          Connect MetaMask
-        </button>
-
-        <button class="auth-btn" onclick="connectRabby()">
-          <span class="auth-btn-icon">
-            <img src="https://i.postimg.cc/SKrcN1qM/download-(1).jpg" width="26" height="26" style="object-fit:contain;border-radius:6px"/>
-          </span>
-          Connect Rabby Wallet
-        </button>
-      </div>
-
+      <!-- Connecting state -->
       <div id="connecting-state" class="connecting-wrap" style="display:none;">
-        <div class="connecting-spinner"></div>
-        <p style="color:var(--text-secondary);font-size:14px;">Connecting wallet...</p>
+        <div class="connecting-spinner" style="border-top-color:#CCFF00;"></div>
+        <p style="color:#CCFF00;font-size:14px;font-weight:600;">Connecting wallet...</p>
         <p style="color:var(--text-muted);font-size:12px;" id="connecting-sub">Waiting for confirmation</p>
       </div>
     </div>
@@ -1805,6 +1812,45 @@ textarea.form-input { resize: vertical; min-height: 100px; line-height: 1.6; }
   </div>
 </div>
 
+<!-- Wallet Connect Modal -->
+<div class="modal-overlay" id="wallet-modal">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title" id="wallet-modal-title">Sign Up</h2>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">
+      Choose your wallet to continue
+    </p>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <button onclick="closeModal('wallet-modal');connectMetaMask();"
+        style="display:flex;align-items:center;gap:14px;width:100%;
+               padding:16px 18px;border-radius:12px;
+               background:var(--bg-elevated);border:1px solid var(--border);
+               cursor:pointer;transition:all 0.2s;color:var(--text-primary);
+               font-family:var(--font-head);font-size:15px;font-weight:600;">
+        <img src="https://i.postimg.cc/MGD1K3xn/download.png"
+             width="32" height="32" style="border-radius:8px;object-fit:contain;flex-shrink:0;"/>
+        MetaMask
+      </button>
+      <button onclick="closeModal('wallet-modal');connectRabby();"
+        style="display:flex;align-items:center;gap:14px;width:100%;
+               padding:16px 18px;border-radius:12px;
+               background:var(--bg-elevated);border:1px solid var(--border);
+               cursor:pointer;transition:all 0.2s;color:var(--text-primary);
+               font-family:var(--font-head);font-size:15px;font-weight:600;">
+        <img src="https://i.postimg.cc/SKrcN1qM/download-(1).jpg"
+             width="32" height="32" style="border-radius:8px;object-fit:contain;flex-shrink:0;"/>
+        Rabby Wallet
+      </button>
+    </div>
+    <button onclick="closeModal('wallet-modal')"
+      style="width:100%;margin-top:16px;padding:12px;border-radius:10px;
+             background:none;border:none;color:var(--text-muted);
+             font-size:14px;cursor:pointer;">
+      Cancel
+    </button>
+  </div>
+</div>
+
 <!-- Add Skill Modal -->
 <div class="modal-overlay" id="add-skill-modal">
   <div class="modal-sheet">
@@ -1937,6 +1983,12 @@ function showApp() {
 /* ============================================================
    AUTH / LOGIN
    ============================================================ */
+function openWalletModal(type) {
+  document.getElementById('wallet-modal-title').textContent =
+    type === 'signup' ? 'Create Account' : 'Welcome Back';
+  openModal('wallet-modal');
+}
+
 async function connectRabby() {
   // Rabby injects as window.ethereum with isRabby flag
   // Both MetaMask and Rabby use the same EIP-1193 API
