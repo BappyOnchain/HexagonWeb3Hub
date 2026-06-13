@@ -599,8 +599,7 @@ textarea.form-input{resize:vertical;min-height:90px;line-height:1.6}
         <button class="tb-hamburger" onclick="toggleSidebar()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <!-- Date only shown on desktop -->
-        <span class="tb-date" id="tb-date" style="display:none"></span>
+
       </div>
       <div class="tb-right">
         <div class="tb-bal"><span class="tb-dot"></span><span id="tb-bal">0.00</span> USDC</div>
@@ -760,7 +759,11 @@ textarea.form-input{resize:vertical;min-height:90px;line-height:1.6}
                 <span class="cat-chip" data-val="Marketing" onclick="selCat(this)">Marketing</span>
               </div>
             </div>
-            <button class="btn btn-green btn-full mt16" onclick="goStep(2)" style="position:sticky;bottom:0;z-index:10;border-radius:12px;padding:15px;font-size:15px">Continue</button>
+            <div style="height:70px"></div>
+          </div>
+          <!-- STICKY BOTTOM BAR for mobile -->
+          <div id="step-next-bar" style="position:fixed;bottom:0;left:0;right:0;padding:12px 16px 24px;background:linear-gradient(to top,var(--bg) 60%,transparent);z-index:20">
+            <button class="btn btn-green btn-full" id="step-next-btn" onclick="handleNextStep()" style="padding:16px;font-size:15px;border-radius:14px;box-shadow:0 4px 20px rgba(204,255,0,0.25)">Continue</button>
           </div>
           <div class="step-panel" id="sp2">
             <div class="step-title">Budget & Freelancer</div>
@@ -812,10 +815,7 @@ textarea.form-input{resize:vertical;min-height:90px;line-height:1.6}
             </div>
             <div class="flex gap8">
               <button class="btn btn-ghost" onclick="goStep(3)">Back</button>
-              <button class="btn btn-green flex1" onclick="submitJob()" id="submit-btn" style="position:sticky;bottom:0;border-radius:12px;padding:14px">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 1 0 20A10 10 0 0 1 12 2"/><path d="M12 8v8M8 12h8"/></svg>
-                Deploy Job
-              </button>
+              <div style="height:70px;flex:1"></div>
             </div>
           </div>
         </div>
@@ -1022,8 +1022,6 @@ async function fbAll(c){await fbWait();const{collection,getDocs}=window._fb;cons
 /* ── INIT ── */
 async function init(){
   setDefaultDeadline();
-  updateDate();
-  setInterval(updateDate,60000);
   if(localStorage.getItem('fs_theme')==='light'){document.body.classList.add('light');document.getElementById('ti-dark').style.display='none';document.getElementById('ti-light').style.display='block';}
   const saved=localStorage.getItem('fs_wallet');
   if(saved&&window.ethereum){
@@ -1034,8 +1032,6 @@ function updateDate(){
   const now=new Date();
   const d=now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   const t=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  const el=document.getElementById('tb-date');
-  if(el)el.textContent=d+' | '+t;
   const el2=document.getElementById('pg-date-sub');
   if(el2)el2.textContent=d+' · '+t;
 }
@@ -1109,6 +1105,9 @@ function nav(page){
   const sbItems=['dashboard','jobs','post','wallet','disputes','explore','profile'];
   sbItems.forEach(p=>{const el=document.getElementById('si-'+p);if(el)el.classList.toggle('active',p===page);});
   S.curPage=page;
+  // Show/hide post job sticky bar
+  const bar=document.getElementById('step-next-bar');
+  if(bar)bar.style.display=page==='post'?'block':'none';
   if(page==='dashboard')loadDashboard();
   if(page==='jobs')loadJobsPage();
   if(page==='wallet')loadWallet();
@@ -1255,7 +1254,22 @@ function renderJob(job,idx=0){
 }
 
 /* ── POST JOB ── */
-function resetPost(){S.postStep=1;S.post={title:'',desc:'',cat:'Development',budget:500,freelancer:'',deadline:''};goStep(1,true);setDefaultDeadline();const pre=localStorage.getItem('fs_prefill');if(pre){document.getElementById('j-freelancer').value=pre;S.post.freelancer=pre;localStorage.removeItem('fs_prefill');}}
+function resetPost(){S.postStep=1;updateStepBar();S.post={title:'',desc:'',cat:'Development',budget:500,freelancer:'',deadline:''};goStep(1,true);setDefaultDeadline();const pre=localStorage.getItem('fs_prefill');if(pre){document.getElementById('j-freelancer').value=pre;S.post.freelancer=pre;localStorage.removeItem('fs_prefill');}}
+function handleNextStep(){
+  const n=S.postStep;
+  if(n===1)goStep(2);
+  else if(n===2)goStep(3);
+  else if(n===3)goStep(4);
+  else if(n===4)submitJob();
+}
+
+function updateStepBar(){
+  const btn=document.getElementById('step-next-btn');
+  if(!btn)return;
+  const labels={1:'Continue',2:'Continue',3:'Review',4:'Deploy Job'};
+  btn.textContent=labels[S.postStep]||'Continue';
+}
+
 function goStep(n,silent){
   if(!silent&&n>S.postStep&&!validateStep(S.postStep))return;
   for(let i=1;i<=4;i++){
@@ -1266,7 +1280,7 @@ function goStep(n,silent){
     else{d.className='s-dot';d.textContent=i;}
     const l=document.getElementById('sl'+i);if(l)l.classList.toggle('done',i<n);
   }
-  if(n===4)fillReview();S.postStep=n;
+  if(n===4)fillReview();S.postStep=n;updateStepBar();
 }
 function validateStep(n){
   if(n===1){const t=document.getElementById('j-title').value.trim();const d=document.getElementById('j-desc').value.trim();if(!t){showToast('error','Missing Title','Enter a job title');return false;}if(d.length<20){showToast('error','Too Short','Write at least 20 characters');return false;}S.post.title=t;S.post.desc=d;S.post.cat=document.querySelector('.cat-chip.sel')?.dataset.val||'Development';}
