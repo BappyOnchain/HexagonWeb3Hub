@@ -486,39 +486,108 @@ textarea.form-input{resize:vertical;min-height:100px;line-height:1.6}
 
 <!-- HOME -->
 <div id="home-wrap" class="page-wrap">
-  <div class="stats-row">
-    <div class="stat-box" style="border-top:2px solid var(--green)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" stroke-width="2" style="margin-bottom:6px"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      <span class="stat-val text-green" id="s-locked">$0</span><span class="stat-lbl">USDC Locked</span>
-    </div>
-    <div class="stat-box" style="border-top:2px solid #3b82f6">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="margin-bottom:6px"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      <span class="stat-val text-blue" id="s-done">0</span><span class="stat-lbl">Jobs Done</span>
-    </div>
-    <div class="stat-box" style="border-top:2px solid #10b981">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" style="margin-bottom:6px"><polyline points="20 6 9 17 4 12"/></svg>
-      <span class="stat-val text-teal" id="s-rate">0%</span><span class="stat-lbl">Success</span>
-    </div>
-  </div>
-  <div class="welcome-card">
+
+  <!-- Welcome Banner -->
+  <div class="welcome-card" style="margin-bottom:16px">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
-        <p style="font-size:10px;color:#CCFF00;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:6px">Arc Testnet · Chain 5042002</p>
-        <p style="font-family:var(--head);font-size:20px;font-weight:800;color:#fff;margin-bottom:2px" id="welcome-msg">Welcome back</p>
-        <p style="font-size:12px;color:#555" id="wallet-short-home">Not connected</p>
+        <p style="font-size:10px;color:#CCFF00;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:5px">Arc Testnet · Chain 5042002</p>
+        <p style="font-family:var(--head);font-size:19px;font-weight:800;color:#fff;margin-bottom:2px" id="welcome-msg">Welcome back</p>
+        <p style="font-size:11px;color:#555;font-family:var(--mono)" id="wallet-short-home">Not connected</p>
       </div>
-      <div style="width:48px;height:48px;background:var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <img src="https://i.postimg.cc/GmBcp4CD/1781061851354.png" width="36" height="36" style="object-fit:contain"/>
+      <div style="width:46px;height:46px;background:var(--green);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(204,255,0,0.25)">
+        <img src="https://i.postimg.cc/GmBcp4CD/1781061851354.png" width="34" height="34" style="object-fit:contain"/>
       </div>
     </div>
   </div>
-  <div class="sec-header">
+
+  <!-- Stats Row -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+    <div class="stat-box anim-fadeUp anim-d1" style="border-top:2px solid #CCFF00">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" stroke-width="2" style="margin-bottom:5px"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span class="stat-val" style="color:#CCFF00;font-size:17px" id="s-locked">$0</span>
+      <span class="stat-lbl">Locked</span>
+    </div>
+    <div class="stat-box anim-fadeUp anim-d2" style="border-top:2px solid #3b82f6">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="margin-bottom:5px"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      <span class="stat-val text-blue" style="font-size:17px" id="s-done">0</span>
+      <span class="stat-lbl">Jobs Done</span>
+    </div>
+    <div class="stat-box anim-fadeUp anim-d3" style="border-top:2px solid #10b981">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" style="margin-bottom:5px"><polyline points="20 6 9 17 4 12"/></svg>
+      <span class="stat-val text-teal" style="font-size:17px" id="s-rate">0%</span>
+      <span class="stat-lbl">Success</span>
+    </div>
+  </div>
+
+  <!-- Earnings Mini Chart -->
+  <div class="card anim-fadeUp anim-d2" style="margin-bottom:16px;padding:16px 18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div>
+        <p style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;margin-bottom:3px">Total Earnings</p>
+        <p style="font-family:var(--head);font-size:22px;font-weight:800;color:#CCFF00" id="home-total-earn">$0.00</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:20px;padding:4px 10px">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+        <span style="font-size:11px;font-weight:700;color:#10b981" id="home-earn-change">+0%</span>
+      </div>
+    </div>
+    <div id="home-mini-chart"></div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card anim-fadeUp anim-d3" style="margin-bottom:16px;padding:16px 18px">
+    <p style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px">Quick Actions</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button onclick="nav('post')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(204,255,0,0.07);border:1px solid rgba(204,255,0,0.15);border-radius:12px;cursor:pointer;text-align:left;transition:all 0.2s" onmouseover="this.style.background='rgba(204,255,0,0.12)'" onmouseout="this.style.background='rgba(204,255,0,0.07)'">
+        <div style="width:32px;height:32px;background:#CCFF00;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <div><p style="font-size:12px;font-weight:700;color:#CCFF00;margin-bottom:1px">Post Job</p><p style="font-size:10px;color:var(--text3)">Create new</p></div>
+      </button>
+      <button onclick="nav('explore')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.15);border-radius:12px;cursor:pointer;text-align:left;transition:all 0.2s" onmouseover="this.style.background='rgba(59,130,246,0.12)'" onmouseout="this.style.background='rgba(59,130,246,0.07)'">
+        <div style="width:32px;height:32px;background:rgba(59,130,246,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div><p style="font-size:12px;font-weight:700;color:#3b82f6;margin-bottom:1px">Explore</p><p style="font-size:10px;color:var(--text3)">Find talent</p></div>
+      </button>
+      <button onclick="nav('wallet')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.15);border-radius:12px;cursor:pointer;text-align:left;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.12)'" onmouseout="this.style.background='rgba(16,185,129,0.07)'">
+        <div style="width:32px;height:32px;background:rgba(16,185,129,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2V18a2 2 0 0 0 2 2h14v-4"/><path d="M18 12c-.6 0-1 .4-1 1s.4 1 1 1h2v-2h-2z"/></svg>
+        </div>
+        <div><p style="font-size:12px;font-weight:700;color:#10b981;margin-bottom:1px">Wallet</p><p style="font-size:10px;color:var(--text3)">View balance</p></div>
+      </button>
+      <button onclick="nav('disputes')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.15);border-radius:12px;cursor:pointer;text-align:left;transition:all 0.2s" onmouseover="this.style.background='rgba(239,68,68,0.12)'" onmouseout="this.style.background='rgba(239,68,68,0.07)'">
+        <div style="width:32px;height:32px;background:rgba(239,68,68,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        </div>
+        <div><p style="font-size:12px;font-weight:700;color:#ef4444;margin-bottom:1px">Disputes</p><p style="font-size:10px;color:var(--text3)">View open</p></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Active Jobs -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <span class="sec-title">Active Jobs</span>
-    <button class="btn btn-green btn-sm" onclick="nav('post')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>New</button>
+    <button class="btn btn-green btn-sm" onclick="nav('post')">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>New
+    </button>
   </div>
   <div id="home-jobs"></div>
-  <div class="sec-header mt20"><span class="sec-title">Recent Activity</span></div>
-  <div class="card" id="activity"></div>
+
+  <!-- Recent Activity Log -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:20px 0 12px">
+    <span class="sec-title">Activity Log</span>
+    <span style="font-size:11px;color:var(--text3)" id="act-date"></span>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden" id="activity">
+    <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
+      <div class="skel" style="height:44px;border-radius:8px;margin-bottom:8px"></div>
+      <div class="skel" style="height:44px;border-radius:8px;margin-bottom:8px"></div>
+      <div class="skel" style="height:44px;border-radius:8px"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- JOBS -->
@@ -1074,15 +1143,24 @@ async function loadJobs() {
 /* ── HOME ── */
 async function loadHome() {
   await loadJobs();
-  const addr = S.wallet||'';
-  const wm = document.getElementById('welcome-msg');
-  const ws = document.getElementById('wallet-short-home');
-  if(wm) wm.textContent = 'Welcome back, '+shortAddr(addr);
-  if(ws) ws.textContent = addr ? addr.slice(0,6)+'...'+addr.slice(-4) : '';
   const jobs=S.jobs;
   const done=jobs.filter(j=>j.status==='completed').length;
   const locked=jobs.filter(j=>['open','submitted','disputed'].includes(j.status)).reduce((s,j)=>s+parseFloat(j.amount||0),0);
   const rate=jobs.length>0?Math.round((done/jobs.length)*100):0;
+  const addr=S.wallet||'';
+  const wm=document.getElementById('welcome-msg');
+  const ws=document.getElementById('wallet-short-home');
+  if(wm) wm.textContent='Welcome back, '+shortAddr(addr);
+  if(ws) ws.textContent=addr?addr.slice(0,8)+'...'+addr.slice(-4):'';
+  const earned=jobs.filter(j=>j.status==='completed'&&j.freelancer?.toLowerCase()===addr.toLowerCase()).reduce((s,j)=>s+parseFloat(j.amount||0),0);
+  const el2=document.getElementById('home-total-earn');
+  if(el2) el2.textContent='$'+earned.toFixed(2);
+  const ad=document.getElementById('act-date');
+  if(ad) ad.textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  renderMiniChart(jobs);
+  animateCount('s-locked','$'+locked.toFixed(0));
+  animateCount('s-done',String(done));
+  animateCount('s-rate',rate+'%');
   // Animated counter
   animateCount('s-locked','$'+locked.toFixed(0));
   animateCount('s-done',done);
@@ -1099,19 +1177,54 @@ async function loadHome() {
   renderActivity();
 }
 
+function renderMiniChart(jobs) {
+  const el = document.getElementById('home-mini-chart');
+  if (!el) return;
+  const months = ['J','F','M','A','M','J'];
+  const data = [0,0,0,0,0,0];
+  jobs.filter(j=>j.status==='completed').forEach(j=>{
+    const d=j.updatedAt?new Date(j.updatedAt.seconds*1000):new Date();
+    const m=d.getMonth(); const now=new Date().getMonth();
+    const idx=m-(now-5); if(idx>=0&&idx<6) data[idx]+=parseFloat(j.amount||0);
+  });
+  const max=Math.max(...data,100);
+  const W=280,H=60;
+  const pts=data.map((v,i)=>`${20+i*(W-40)/5},${H-10-Math.round((v/max)*(H-16))}`).join(' ');
+  const area=`${20},${H-10} ${pts} ${20+(data.length-1)*(W-40)/5},${H-10}`;
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#CCFF00" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#CCFF00" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <polygon points="${area}" fill="url(#cg)"/>
+    <polyline points="${pts}" fill="none" stroke="#CCFF00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${data.map((v,i)=>`<circle cx="${20+i*(W-40)/5}" cy="${H-10-Math.round((v/max)*(H-16))}" r="3" fill="#CCFF00"/>`).join('')}
+    ${months.map((m,i)=>`<text x="${20+i*(W-40)/5}" y="${H}" text-anchor="middle" font-size="9" fill="#555" font-family="Inter">${m}</text>`).join('')}
+  </svg>`;
+}
+
 function renderActivity() {
   const el=document.getElementById('activity');
   const recent=[...S.jobs].sort((a,b)=>(b.updatedAt?.seconds||0)-(a.updatedAt?.seconds||0)).slice(0,5);
   if(!recent.length){el.innerHTML='<div class="empty"><p class="empty-sub">No recent activity</p></div>';return;}
-  el.innerHTML=recent.map(j=>`
-  <div class="act-item">
-    <div class="act-icon" style="background:${actBg(j.status)}">${actIcon(j.status)}</div>
-    <div class="act-body">
-      <p class="act-title">${esc(j.title||'Job')}</p>
-      <p class="act-time">${j.updatedAt?timeAgo(j.updatedAt.seconds*1000):'Recently'}</p>
+  el.innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr auto auto;gap:0;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;padding:10px 18px;border-bottom:1px solid var(--border)">
+    <span>Job</span><span style="margin-right:24px">Amount</span><span>Status</span>
+  </div>
+  ${recent.map(j=>`
+  <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--border);transition:background 0.15s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0">
+      <div style="width:32px;height:32px;border-radius:9px;background:${actBg(j.status)};display:flex;align-items:center;justify-content:center;flex-shrink:0">${actIcon(j.status)}</div>
+      <div style="min-width:0">
+        <p style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(j.title||'Job')}</p>
+        <p style="font-size:10px;color:var(--text3)">${j.updatedAt?timeAgo(j.updatedAt.seconds*1000):'Recently'}</p>
+      </div>
     </div>
-    <span class="act-amt ${j.status==='completed'?'text-teal':'text-muted'}">$${parseFloat(j.amount||0).toFixed(0)}</span>
-  </div>`).join('');
+    <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${j.status==='completed'?'#10b981':'#CCFF00'};margin-right:16px">$${parseFloat(j.amount||0).toFixed(0)}</span>
+    <span class="badge ${bdg(j.status)}">${cap(j.status||'open')}</span>
+  </div>`).join('')}`;
 }
 
 function actBg(s){const m={open:'rgba(59,130,246,0.1)',submitted:'rgba(245,158,11,0.1)',completed:'rgba(16,185,129,0.1)',disputed:'rgba(239,68,68,0.1)'};return m[s]||'rgba(100,116,139,0.1)'}
