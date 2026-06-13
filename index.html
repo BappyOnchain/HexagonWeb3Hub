@@ -871,36 +871,36 @@ function disconnectWallet() {
 
 async function connectWallet(type) {
   document.getElementById('walletModal').classList.remove('show');
+  
   let eth = window.ethereum;
+  if(!eth) { showToast('Wallet not found','error'); return; }
 
   // Rabby detection
   if(type==='rabby') {
     if(window.ethereum?.isRabby) eth = window.ethereum;
     else if(window.rabby) eth = window.rabby;
-    else { showToast('Rabby not found. Install from rabby.io','error'); return; }
-  } else {
-    if(!window.ethereum) { showToast('MetaMask not found. Install from metamask.io','error'); return; }
   }
 
   try {
     showToast('Connecting…','info');
-    provider = new ethers.BrowserProvider(eth);
-    await eth.request({ method:'eth_requestAccounts' });
 
-    // Switch to Arc Testnet
+    // Step 1: Request accounts — triggers wallet confirmation popup
+    const accounts = await eth.request({ method:'eth_requestAccounts' });
+    if(!accounts || accounts.length === 0) throw new Error('No accounts found');
+
+    // Step 2: Switch to Arc Testnet
     const targetChainId = '0x' + (5050130).toString(16);
     try {
       await eth.request({ method:'wallet_switchEthereumChain', params:[{chainId: targetChainId}] });
     } catch(switchErr) {
-      // 4902 = chain not added yet
       if(switchErr.code === 4902) {
         await eth.request({ method:'wallet_addEthereumChain', params:[ARC_NETWORK] });
       } else if(switchErr.code === 4001) {
-        throw new Error('User rejected network switch');
+        throw new Error('Network switch rejected');
       }
-      // other errors = chain exists, ignore
     }
 
+    // Step 3: Init provider + signer after switch
     provider = new ethers.BrowserProvider(eth);
     signer   = await provider.getSigner();
     userAddr = await signer.getAddress();
