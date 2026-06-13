@@ -738,7 +738,12 @@ input[type=range]::-webkit-slider-thumb{
 // ══════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════
-const CHAIN_ID     = 5050130;
+// FIX: Circle's official Arc Testnet chain ID is 5042002
+// (previously this was set to 5050130, which doesn't match any
+// real Arc Testnet deployment -> wallet was connecting to a chain
+// where the pool contract doesn't exist, causing
+// "missing revert data" on every contract call)
+const CHAIN_ID     = 5042002;
 const RPC          = 'https://rpc.testnet.arc.network';
 const EXPLORER     = 'https://testnet.arcscan.app';
 const POOL_ADDR    = '0xcd852b47c75BBB0d17b0AF3f1659B4c844248291';
@@ -746,11 +751,11 @@ const USDC_ADDR    = '0x3600000000000000000000000000000000000000';
 const EURC_ADDR    = '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a';
 
 const ARC_NETWORK = {
-  chainId: '0x' + (5050130).toString(16),
+  chainId: '0x' + CHAIN_ID.toString(16),
   chainName: 'Arc Testnet',
   nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
-  rpcUrls: ['https://rpc.testnet.arc.network'],
-  blockExplorerUrls: ['https://testnet.arcscan.app']
+  rpcUrls: [RPC],
+  blockExplorerUrls: [EXPLORER]
 };
 
 // ABIs
@@ -862,6 +867,7 @@ function disconnectWallet() {
   userAddr=null; provider=null; signer=null;
   poolContract=usdcContract=eurcContract=lpContract=null;
   document.getElementById('connectText').textContent='Connect';
+  document.getElementById('connectText').className='';
   document.getElementById('swapBtn').textContent='Connect Wallet';
   document.getElementById('addLiqBtn').textContent='Connect Wallet';
   document.getElementById('removeLiqBtn').textContent='Connect Wallet';
@@ -889,7 +895,7 @@ async function connectWallet(type) {
     if(!accounts || accounts.length === 0) throw new Error('No accounts found');
 
     // Step 2: Switch to Arc Testnet
-    const targetChainId = '0x' + (5050130).toString(16);
+    const targetChainId = '0x' + CHAIN_ID.toString(16);
     try {
       await eth.request({ method:'wallet_switchEthereumChain', params:[{chainId: targetChainId}] });
     } catch(switchErr) {
@@ -905,18 +911,30 @@ async function connectWallet(type) {
     signer   = await provider.getSigner();
     userAddr = await signer.getAddress();
 
+    // FIX: show the connected address immediately, before any
+    // contract calls that could throw and abort the function early.
+    const short = userAddr.slice(0,6)+'…'+userAddr.slice(-4);
+    document.getElementById('connectText').textContent = short;
+    document.getElementById('connectText').className = 'wallet-addr';
+    showToast('✅ Connected: '+short,'success');
+
     // Init contracts
     poolContract  = new ethers.Contract(POOL_ADDR, POOL_ABI, signer);
     usdcContract  = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
     eurcContract  = new ethers.Contract(EURC_ADDR, ERC20_ABI, signer);
-    lpAddr        = await poolContract.lpToken();
-    lpContract    = new ethers.Contract(lpAddr, ERC20_ABI, signer);
 
-    const short = userAddr.slice(0,6)+'…'+userAddr.slice(-4);
-    document.getElementById('connectText').textContent = short;
-    document.getElementById('connectText').className = 'wallet-addr';
+    // FIX: lpToken() / contract reads are wrapped so a failure here
+    // (wrong chain, contract not deployed, etc.) doesn't undo the
+    // address display above — user still sees they're connected and
+    // gets a clear error toast about what's wrong.
+    try {
+      lpAddr     = await poolContract.lpToken();
+      lpContract = new ethers.Contract(lpAddr, ERC20_ABI, signer);
+    } catch(lpErr) {
+      console.error('lpToken() failed', lpErr);
+      showToast('⚠️ Pool contract not found on this chain','error');
+    }
 
-    showToast('✅ Connected: '+short,'success');
     await loadBalances();
     await loadPoolInfo();
     updateActionBtns();
@@ -983,7 +1001,10 @@ async function loadPoolInfo() {
       const price = parseFloat(ethers.formatUnits(pUE,6)).toFixed(6);
       document.getElementById('poolPrice').textContent = price+' USDC';
     }
-  } catch(e) { console.error('loadPoolInfo',e); }
+  } catch(e) {
+    console.error('loadPoolInfo',e);
+    showToast('⚠️ Could not load pool data — check contract/network','error');
+  }
 }
 
 async function loadMyLP() {
@@ -1074,8 +1095,10 @@ async function calcOut() {
     document.getElementById('infoMinOut').textContent      = fmtN(minOut,6)+' '+outLabel;
     document.getElementById('swapInfo').style.display      = 'block';
   } catch(e) {
+    console.error('calcOut',e);
     document.getElementById('amtOut').value='';
     document.getElementById('swapInfo').style.display='none';
+    showToast('⚠️ Could not fetch quote — check pool/network','error');
   }
 }
 
@@ -1281,7 +1304,6 @@ async function doRemoveLiquidity() {
 // UI STATE
 // ══════════════════════════════════════════════
 function updateActionBtns() {
-  const label = userAddr ? 'Swap' : 'Connect Wallet';
   document.getElementById('swapBtn').textContent = userAddr ? 'Swap' : 'Connect Wallet';
   document.getElementById('addLiqBtn').textContent = userAddr ? 'Add Liquidity' : 'Connect Wallet';
   document.getElementById('removeLiqBtn').textContent = userAddr ? 'Remove Liquidity' : 'Connect Wallet';
