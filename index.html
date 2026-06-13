@@ -738,7 +738,7 @@ input[type=range]::-webkit-slider-thumb{
 // ══════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════
-const CHAIN_ID     = 5050122;
+const CHAIN_ID     = 5042002;
 const RPC          = 'https://rpc.testnet.arc.network';
 const EXPLORER     = 'https://testnet.arcscan.app';
 const POOL_ADDR    = '0xcd852b47c75BBB0d17b0AF3f1659B4c844248291';
@@ -746,9 +746,9 @@ const USDC_ADDR    = '0x3600000000000000000000000000000000000000';
 const EURC_ADDR    = '0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a';
 
 const ARC_NETWORK = {
-  chainId: '0x4D0F0A',
+  chainId: '0x4D0F12',
   chainName: 'Arc Testnet',
-  nativeCurrency: { name: 'ARC', symbol: 'ARC', decimals: 18 },
+  nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 },
   rpcUrls: ['https://rpc.testnet.arc.network'],
   blockExplorerUrls: ['https://testnet.arcscan.app']
 };
@@ -887,15 +887,14 @@ async function connectWallet(type) {
     provider = new ethers.BrowserProvider(eth);
     await eth.request({ method:'eth_requestAccounts' });
 
-    // Switch/add Arc network
     try {
-      await eth.request({ method:'wallet_switchEthereumChain', params:[{chainId:'0x4D0F0A'}] });
+      await eth.request({ method:'wallet_switchEthereumChain', params:[{chainId:'0x4D0F12'}] });
     } catch(switchErr) {
       if(switchErr.code===4902 || switchErr.code===-32603) {
         try {
           await eth.request({ method:'wallet_addEthereumChain', params:[ARC_NETWORK] });
         } catch(addErr) {
-          throw new Error('Arc Testnet network add করতে পারেনি: '+addErr.message);
+          throw new Error('Arc Testnet add failed: '+addErr.message);
         }
       } else {
         throw switchErr;
