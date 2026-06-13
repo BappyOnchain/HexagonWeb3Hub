@@ -1040,32 +1040,85 @@ function setDefaultDeadline(){const el=document.getElementById('j-deadline');if(
 /* ── AUTH ── */
 function setAuthMode(m){document.getElementById('auth-title').textContent=m==='signup'?'Create Account':'Welcome Back';}
 async function connectMM(){
-  if(!window.ethereum){showToast('error','Not Found','Install MetaMask');return;}
+  // Check window.ethereum
+  if(!window.ethereum){
+    showToast('error','MetaMask Not Found','Open this site inside MetaMask browser');
+    hideConn();
+    return;
+  }
   showConn('Connecting MetaMask...');
   try{
     let p=window.ethereum;
-    if(p.providers)p=p.providers.find(x=>x.isMetaMask&&!x.isRabby)||p;
+    // Handle multiple providers (e.g. Rabby + MetaMask both installed)
+    if(p.providers&&p.providers.length){
+      p=p.providers.find(x=>x.isMetaMask&&!x.isRabby)||p.providers[0];
+    }
+    console.log('Provider found:',p);
+    // Request accounts — this triggers the wallet popup
+    showToast('loading','MetaMask','Approve in your wallet popup');
     const accs=await p.request({method:'eth_requestAccounts'});
-    if(!accs.length)throw new Error('No accounts');
-    await addNetwork(p);await setupWallet(accs[0],p);
-  }catch(e){hideConn();handleErr(e);}
+    if(!accs||!accs.length)throw new Error('No accounts returned');
+    await addNetwork(p);
+    await setupWallet(accs[0],p);
+  }catch(e){
+    hideConn();
+    console.error('connectMM error:',e);
+    handleErr(e);
+  }
 }
+
 async function connectRabby(){
-  if(!window.ethereum){showToast('error','Not Found','Install Rabby Wallet');return;}
+  if(!window.ethereum){
+    showToast('error','Rabby Not Found','Open this site inside Rabby browser');
+    hideConn();
+    return;
+  }
   showConn('Connecting Rabby...');
   try{
     let p=window.ethereum;
-    if(p.providers)p=p.providers.find(x=>x.isRabby)||p;
+    // Handle multiple providers
+    if(p.providers&&p.providers.length){
+      p=p.providers.find(x=>x.isRabby)||p.providers[0];
+    }
+    console.log('Rabby provider:',p);
+    showToast('loading','Rabby Wallet','Approve in your wallet popup');
     const accs=await p.request({method:'eth_requestAccounts'});
-    if(!accs.length)throw new Error('No accounts');
-    await addNetwork(p);await setupWallet(accs[0],p);
-  }catch(e){hideConn();handleErr(e);}
+    if(!accs||!accs.length)throw new Error('No accounts returned');
+    await addNetwork(p);
+    await setupWallet(accs[0],p);
+  }catch(e){
+    hideConn();
+    console.error('connectRabby error:',e);
+    handleErr(e);
+  }
 }
 async function addNetwork(p){
-  const hex=await p.request({method:'eth_chainId'});
-  if(parseInt(hex,16)===ARC_CHAIN_ID)return;
-  try{await p.request({method:'wallet_addEthereumChain',params:[{chainId:'0x'+ARC_CHAIN_ID.toString(16),chainName:'Arc Testnet',rpcUrls:[ARC_RPC],nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},blockExplorerUrls:['https://testnet.arcscan.app']}]});}
-  catch(e){try{await p.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x'+ARC_CHAIN_ID.toString(16)}]});}catch(e2){if(e2.code===4001)throw e2;}}
+  try{
+    const hex=await p.request({method:'eth_chainId'});
+    if(parseInt(hex,16)===ARC_CHAIN_ID)return;
+    try{
+      await p.request({method:'wallet_addEthereumChain',params:[{
+        chainId:'0x'+ARC_CHAIN_ID.toString(16),
+        chainName:'Arc Testnet',
+        rpcUrls:[ARC_RPC],
+        nativeCurrency:{name:'ARC',symbol:'ARC',decimals:18},
+        blockExplorerUrls:['https://testnet.arcscan.app']
+      }]});
+    }catch(addErr){
+      // Chain already added, try switching
+      try{
+        await p.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x'+ARC_CHAIN_ID.toString(16)}]});
+      }catch(swErr){
+        if(swErr.code===4001)throw swErr; // User rejected
+        // Otherwise ignore — may already be on correct chain
+        console.warn('Network switch warning:',swErr.message);
+      }
+    }
+  }catch(e){
+    if(e.code===4001)throw e;
+    console.warn('addNetwork non-fatal:',e.message);
+    // Continue anyway — let user try
+  }
 }
 async function setupWallet(addr,raw){
   S.wallet=addr;S.provider=new ethers.BrowserProvider(raw);S.signer=await S.provider.getSigner();
